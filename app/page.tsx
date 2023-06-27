@@ -1,13 +1,19 @@
 'use client';
 
-import { useCompletion } from 'ai/react';
+import { useCompletion, useChat } from 'ai/react';
 
-function SloganGenerator() {
-  const { completion, input, handleInputChange, handleSubmit } =
-    useCompletion();
+function ChatPage() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+  });
 
   return (
     <div className='flex flex-col w-full max-w-md py-24 mx-auto stretch'>
+      {messages.map((m) => (
+        <div key={m.id}>
+          {m.role}: {m.content}
+        </div>
+      ))}
       <form onSubmit={handleSubmit}>
         <input
           className='fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl text-zinc-900'
@@ -16,9 +22,8 @@ function SloganGenerator() {
           onChange={handleInputChange}
         />
       </form>
-      <div className='my-6 whitespace-pre-wrap'>{completion}</div>
     </div>
   );
 }
 
-export default SloganGenerator;
+export default ChatPage;

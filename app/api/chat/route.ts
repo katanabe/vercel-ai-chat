@@ -7,28 +7,27 @@ const config = new Configuration({
 
 const openai = new OpenAIApi(config);
 
-// Set the runtime to edge for best performance
-// export const runtime = 'edge';
+// Enabling support for Edge runtimes
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
+  // Your prompt
   const { messages } = await req.json();
 
+  console.log('post request received', messages);
+
+  // Ask OpenAI for a streaming chat completion given the prompt
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     stream: true,
     messages,
   });
 
-  const stream = OpenAIStream(response, {
-    onStart: async () => {
-      console.log('onStart');
-    },
-    onToken: async (token: string) => {
-      console.log(token);
-    },
-    onCompletion: async (completion: string) => {
-      console.log('onCompletion', completion);
-    },
-  });
+  console.log('open ai response', response);
+
+  // Convert the response into a friendly text-stream
+  const stream = OpenAIStream(response);
+
+  // Respond with the stream
   return new StreamingTextResponse(stream);
 }
